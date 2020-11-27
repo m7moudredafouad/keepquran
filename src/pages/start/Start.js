@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import SURAHS from '../../shared/SURAHS';
@@ -11,14 +11,6 @@ const Start = () => {
 	const [surahAyatNumber, setSurahAyatNumber] = useState(0);
 
 	const myHistory = useHistory();
-
-	useEffect(() => {
-		fetch('https://api.quran.com/api/v3/chapters/1/verses/1/tafsirs')
-			.then((res) => res.json())
-			.then((data) => {
-				console.log(data);
-			});
-	}, []);
 
 	const savedStart = () => {
 		if (!localStorage.getItem('ayahNumber')) {
@@ -98,18 +90,22 @@ const Start = () => {
 
 	return (
 		<div className="start">
-			<button className="btn mt-2" onClick={savedStart}>
-				ابدأ من اخر حفظ قمت به
-			</button>
-			<button
-				className="btn mt-2"
-				onClick={() => setShowCustom((prevState) => !prevState)}
-			>
-				بدايه مخصصه
-			</button>
+			<div className="start_starting">
+				<button className="btn mt-2" onClick={savedStart}>
+					ابدأ من اخر حفظ قمت به
+				</button>
+				<button
+					className="btn mt-2"
+					onClick={() => setShowCustom((prevState) => !prevState)}
+				>
+					بدايه مخصصه
+				</button>
 
-			{showCustom && (
-				<form className="form mt-2" onSubmit={submitForm}>
+				<form
+					className="form mt-2"
+					onSubmit={submitForm}
+					style={{ display: showCustom ? 'flex' : 'none' }}
+				>
 					<select
 						className="form_input"
 						onChange={(e) => changeShiekh(e.target.value)}
@@ -133,7 +129,15 @@ const Start = () => {
 					</select>
 					<button className="btn btn-sm">تأكيد</button>
 				</form>
-			)}
+			</div>
+
+			<div className="start_hadith ayat_aya">
+				<p>
+					عن عبد الله بن مسعود -رضي الله عنه- إنَّ رسول الله قال: "من قرأ حرفًا
+					من كتابِ اللهِ فلهُ به حسنةٌ والحسنةُ بعشرِ أمثالِها، لا أقولُ آلم
+					حرفٌ، ولكن ألفٌ حرفٌ ولامٌ حرفٌ وميمٌ حرفٌ"
+				</p>
+			</div>
 		</div>
 	);
 };

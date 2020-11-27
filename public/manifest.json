@@ -1,6 +1,6 @@
 {
-	"short_name": "KeepQuran",
-	"name": "KeepQuran",
+	"short_name": "Keep Quran",
+	"name": "Keep Quran",
 	"icons": [
 		{
 			"src": "favicon.ico",
@@ -20,6 +20,6 @@
 	],
 	"start_url": ".",
 	"display": "standalone",
-	"theme_color": "#181818",
-	"background_color": "#ffffffde"
+	"theme_color": "#ffffffde",
+	"background_color": "#181818"
 }

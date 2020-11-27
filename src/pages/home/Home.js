@@ -36,6 +36,10 @@ const reducer = (state, action) => {
 						newState.addAyah = newState.addAyah + 1;
 					}
 					ayah.isReady = true;
+
+					if (newState.autoPlay) {
+						ayah.isPlaying = true;
+					}
 				}
 
 				newState.isPageEnded = newState.isPageEnded && ayah.isFinished;
@@ -69,6 +73,12 @@ const reducer = (state, action) => {
 				...state,
 				isPageEnded: action.payload.state,
 			};
+
+		case 'UPDATE_AUTOPLAY':
+			return {
+				...state,
+				autoPlay: action.payload.state,
+			};
 		default:
 			return state;
 	}
@@ -87,6 +97,7 @@ const Home = () => {
 		ayahNumberInQuran: undefined,
 		surahNumber: parseInt(localStorage.getItem('surahNumber')) || 1,
 		pageNumber: undefined,
+		autoPlay: localStorage.getItem('autoPlay') === 'true' ? true : false,
 		pageAyahs: [],
 		isPageEnded: false,
 		addAyah: 0,
@@ -214,32 +225,18 @@ const Home = () => {
 			return viewModal(ayah.tafseer);
 		} else {
 			viewModal('Loading..');
-			fetch(
-				`${process.env.REACT_APP_TAFSEER}/chapters/${ayah.surah.number}/verses/${ayah.numberInSurah}/tafsirs`
-			)
+			fetch(`${process.env.REACT_APP_TAFSEER}/${ayah.number}/ar.muyassar`)
 				.then((res) => res.json())
 				.then((data) => {
-					if (data.status === 500) {
+					if (data.status === 404) {
 						hideModal();
 						return;
 					}
-
-					let newTafseer = null;
-					console.log(data.tafsirs);
-
-					data.tafsirs.forEach((tafseer) => {
-						if (tafseer.resource_name === 'المیسر') {
-							newTafseer = tafseer.text;
-							console.log('found');
-							return;
-						}
-					});
-
 					dispatch({
 						type: 'ADD_TAFSEER',
-						payload: { number: ayah.number, tafseer: newTafseer },
+						payload: { number: ayah.number, tafseer: data.data.text },
 					});
-					viewModal(newTafseer);
+					viewModal(data.data.text);
 				});
 		}
 	};
@@ -255,6 +252,14 @@ const Home = () => {
 		setShowModal({
 			show: false,
 			text: null,
+		});
+	};
+
+	const changeAutoState = () => {
+		localStorage.setItem('autoPlay', !keepState.autoPlay);
+		dispatch({
+			type: 'UPDATE_AUTOPLAY',
+			payload: { state: !keepState.autoPlay },
 		});
 	};
 
@@ -287,6 +292,17 @@ const Home = () => {
 				/>
 
 				<div className="ayat">
+					<div className="ayat_aya dFlex">
+						<button
+							className={`btn btn-sm mAuto ${
+								keepState.autoPlay === true ? 'btn-green' : null
+							}`}
+							onClick={changeAutoState}
+						>
+							Autoplay
+						</button>
+					</div>
+
 					{renderReadyAyahs()}
 
 					{keepState.isPageEnded && (

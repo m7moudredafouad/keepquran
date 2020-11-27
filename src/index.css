@@ -129,6 +129,12 @@ ul {
 .btn:hover {
 	background: #3e3e3e;
 }
+.btn-green {
+	background-color: #376e37;
+}
+.btn-green:hover {
+	background-color: #51a151;
+}
 
 .who {
 	grid-column: 2/3;
@@ -212,9 +218,20 @@ ul {
 
 .start {
 	grid-column: 2/3;
+}
+.start_starting {
 	margin: auto;
 	display: flex;
 	flex-direction: column;
+	max-width: 30rem;
+	min-width: 20rem;
+}
+.start_hadith {
+	font-family: 'Amiri', serif;
+	margin: 6rem auto 0 auto;
+	max-width: 50rem;
+	min-width: 35rem;
+	font-size: 1.9rem;
 }
 
 .form {
@@ -552,4 +569,12 @@ ul {
 
 .pb-2 {
 	padding-bottom: 2rem;
+}
+
+.dFlex {
+	display: flex;
+}
+
+.mAuto {
+	margin: auto;
 }

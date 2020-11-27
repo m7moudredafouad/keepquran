@@ -21,7 +21,9 @@ const Player = ({
 		if (!isPlayingNow) {
 			audioRef.current.pause();
 		} else {
-			audioRef.current.play();
+			if (duration) {
+				audioRef.current.play();
+			}
 		}
 	}, [isPlayingNow]);
 
@@ -88,14 +90,21 @@ const Player = ({
 		onFinished();
 	};
 
+	const OnLoaded = (newDuration) => {
+		setDuration(newDuration);
+		if (isPlayingNow) {
+			audioRef.current.play();
+		}
+	};
+
 	return (
 		<Fragment>
 			<audio
 				ref={audioRef}
-				src={`http://cdn.alquran.cloud/media/audio/ayah/ar.${favShiek}/${ayahNumberInQuran}/low`}
+				src={`https://cdn.alquran.cloud/media/audio/ayah/ar.${favShiek}/${ayahNumberInQuran}/low`}
 				type="audio/mpeg"
 				onTimeUpdate={() => setCurrentTime(audioRef.current.currentTime)}
-				onCanPlay={(e) => setDuration(e.target.duration)}
+				onCanPlay={(e) => OnLoaded(e.target.duration)}
 				onEnded={audioFinished}
 			></audio>
 			<div className="player">

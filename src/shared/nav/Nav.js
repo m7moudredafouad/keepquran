@@ -13,7 +13,7 @@ const Nav = () => {
 				</Link>
 			</ul>
 			<Link to="/" className="nav_logo nav_list-link">
-				إحفظ القرآن
+				احفظ القرآن
 			</Link>
 		</nav>
 	);
