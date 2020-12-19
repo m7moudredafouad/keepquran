@@ -1,7 +1,7 @@
 import React from 'react';
 import useCopy from '../../shared/hooks/useCopy';
 
-const Ayah = ({ ayah, surahNumber }) => {
+const Ayah = ({ ayah, surahNumber, surahName, getTafseer }) => {
 	const [copyToClipboard, copied] = useCopy();
 
 	return (
@@ -22,7 +22,17 @@ const Ayah = ({ ayah, surahNumber }) => {
 				>
 					نسخ {copied.copied && copied.number === ayah.number ? '✓' : ''}
 				</button>
-				{/* <button className="btn btn-sm">التفسير</button> */}
+				<button
+					className="btn btn-sm"
+					onClick={() =>
+						getTafseer(
+							ayah,
+							`تفسير ${surahName} الآيه رقم ${ayah.numberInSurah}`
+						)
+					}
+				>
+					التفسير
+				</button>
 			</span>
 		</div>
 	);

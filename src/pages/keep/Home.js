@@ -4,6 +4,7 @@ import { useHistory } from 'react-router-dom';
 import Account from './Account';
 import Modal from '../../shared/modal/Modal';
 import Ayah from './Ayah';
+import useGetTafseer from '../../shared/hooks/useGetTafseer';
 
 const reducer = (state, action) => {
 	let newState;
@@ -81,12 +82,6 @@ const reducer = (state, action) => {
 
 const Home = () => {
 	const myHistory = useHistory();
-
-	const [showModal, setShowModal] = useState({
-		show: false,
-		text: null,
-		header: null,
-	});
 
 	const [keepState, dispatch] = useReducer(reducer, {
 		ayahNumber: parseInt(localStorage.getItem('ayahNumber')) || 1,
@@ -215,42 +210,14 @@ const Home = () => {
 		});
 	};
 
-	const getTafseer = (ayah, header) => {
-		if (ayah.tafseer != null) {
-			return viewModal(ayah.tafseer, header);
-		} else {
-			viewModal('Loading..', header);
-			fetch(`${process.env.REACT_APP_TAFSEER}/${ayah.number}/ar.muyassar`)
-				.then((res) => res.json())
-				.then((data) => {
-					if (data.status === 404) {
-						hideModal();
-						return;
-					}
-					dispatch({
-						type: 'ADD_TAFSEER',
-						payload: { number: ayah.number, tafseer: data.data.text },
-					});
-					viewModal(data.data.text, header);
-				});
-		}
-	};
+	const [getTafseerMainFunc, showModalState, hideModal] = useGetTafseer();
 
-	const viewModal = (text, header) => {
-		setShowModal({
-			show: true,
-			text,
-			header,
+	const getTafseer = getTafseerMainFunc((ayahNumber, theTafseer) => {
+		dispatch({
+			type: 'ADD_TAFSEER',
+			payload: { number: ayahNumber, tafseer: theTafseer },
 		});
-	};
-
-	const hideModal = () => {
-		setShowModal({
-			show: false,
-			text: null,
-			header: null,
-		});
-	};
+	});
 
 	const renderReadyAyahs = () => {
 		return keepState.pageAyahs.map((ayah) => {
@@ -270,10 +237,10 @@ const Home = () => {
 
 	return (
 		<Fragment>
-			{showModal.show && showModal.text != null && (
+			{showModalState.show && showModalState.text != null && (
 				<Modal
-					text={showModal.text}
-					header={showModal.header}
+					text={showModalState.text}
+					header={showModalState.header}
 					onClose={hideModal}
 				/>
 			)}
