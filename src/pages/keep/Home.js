@@ -37,7 +37,7 @@ const reducer = (state, action) => {
 					}
 					ayah.isReady = true;
 
-					if (newState.autoPlay) {
+					if (localStorage.getItem('autoPlay') === 'true') {
 						ayah.isPlaying = true;
 					}
 				}
@@ -74,11 +74,6 @@ const reducer = (state, action) => {
 				isPageEnded: action.payload.state,
 			};
 
-		case 'UPDATE_AUTOPLAY':
-			return {
-				...state,
-				autoPlay: action.payload.state,
-			};
 		default:
 			return state;
 	}
@@ -90,6 +85,7 @@ const Home = () => {
 	const [showModal, setShowModal] = useState({
 		show: false,
 		text: null,
+		header: null,
 	});
 
 	const [keepState, dispatch] = useReducer(reducer, {
@@ -97,7 +93,6 @@ const Home = () => {
 		ayahNumberInQuran: undefined,
 		surahNumber: parseInt(localStorage.getItem('surahNumber')) || 1,
 		pageNumber: undefined,
-		autoPlay: localStorage.getItem('autoPlay') === 'true' ? true : false,
 		pageAyahs: [],
 		isPageEnded: false,
 		addAyah: 0,
@@ -220,11 +215,11 @@ const Home = () => {
 		});
 	};
 
-	const getTafseer = (ayah) => {
+	const getTafseer = (ayah, header) => {
 		if (ayah.tafseer != null) {
-			return viewModal(ayah.tafseer);
+			return viewModal(ayah.tafseer, header);
 		} else {
-			viewModal('Loading..');
+			viewModal('Loading..', header);
 			fetch(`${process.env.REACT_APP_TAFSEER}/${ayah.number}/ar.muyassar`)
 				.then((res) => res.json())
 				.then((data) => {
@@ -236,15 +231,16 @@ const Home = () => {
 						type: 'ADD_TAFSEER',
 						payload: { number: ayah.number, tafseer: data.data.text },
 					});
-					viewModal(data.data.text);
+					viewModal(data.data.text, header);
 				});
 		}
 	};
 
-	const viewModal = (text) => {
+	const viewModal = (text, header) => {
 		setShowModal({
 			show: true,
 			text,
+			header,
 		});
 	};
 
@@ -252,14 +248,7 @@ const Home = () => {
 		setShowModal({
 			show: false,
 			text: null,
-		});
-	};
-
-	const changeAutoState = () => {
-		localStorage.setItem('autoPlay', !keepState.autoPlay);
-		dispatch({
-			type: 'UPDATE_AUTOPLAY',
-			payload: { state: !keepState.autoPlay },
+			header: null,
 		});
 	};
 
@@ -282,7 +271,11 @@ const Home = () => {
 	return (
 		<Fragment>
 			{showModal.show && showModal.text != null && (
-				<Modal text={showModal.text} onClose={hideModal} />
+				<Modal
+					text={showModal.text}
+					header={showModal.header}
+					onClose={hideModal}
+				/>
 			)}
 			<div className="content">
 				<Account
@@ -292,17 +285,6 @@ const Home = () => {
 				/>
 
 				<div className="ayat">
-					<div className="ayat_aya dFlex">
-						<button
-							className={`btn btn-sm mAuto ${
-								keepState.autoPlay === true ? 'btn-green' : null
-							}`}
-							onClick={changeAutoState}
-						>
-							Autoplay
-						</button>
-					</div>
-
 					{renderReadyAyahs()}
 
 					{keepState.isPageEnded && (

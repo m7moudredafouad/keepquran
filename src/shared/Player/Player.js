@@ -75,18 +75,6 @@ const Player = ({
 	const audioFinished = () => {
 		setIsPlayingNow(false);
 
-		if (surahNumber > parseInt(localStorage.getItem('surahNumber'))) {
-			localStorage.setItem('surahNumber', surahNumber);
-
-			if (ayahNumber < parseInt(localStorage.getItem('ayahNumber'))) {
-				localStorage.setItem('ayahNumber', ayahNumber);
-			}
-		} else if (surahNumber === parseInt(localStorage.getItem('surahNumber'))) {
-			if (ayahNumber > parseInt(localStorage.getItem('ayahNumber'))) {
-				localStorage.setItem('ayahNumber', ayahNumber);
-			}
-		}
-
 		onFinished();
 	};
 

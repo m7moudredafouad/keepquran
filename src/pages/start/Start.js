@@ -1,18 +1,68 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import SURAHS from '../../shared/SURAHS';
-import SHIEKH from '../../shared/SHIEKH';
 
 const Start = () => {
-	const [showCustom, setShowCustom] = useState(false);
-	const [newSurah, setNewSurah] = useState(1);
-	const [newAyah, setNewAyah] = useState(1);
 	const [surahAyatNumber, setSurahAyatNumber] = useState(0);
+	const [surahNumber, setSurahNumber] = useState(
+		parseInt(localStorage.getItem('surahNumber'))
+	);
 
 	const myHistory = useHistory();
 
-	const savedStart = () => {
+	const renderSurahsNames = () => {
+		let surahInLocalStorage = parseInt(localStorage.getItem('surahNumber'));
+		return SURAHS.map((surah) => {
+			let foundSurah = surah.number === surahInLocalStorage;
+			return (
+				<option
+					value={`${surah.number}_${surah.total_verses}`}
+					key={surah.number.toString()}
+					selected={foundSurah}
+				>
+					سورة {surah.name}
+				</option>
+			);
+		});
+	};
+
+	const renderAyatNumber = () => {
+		let ayahInLocalStorage = parseInt(localStorage.getItem('ayahNumber'));
+
+		let AyatComponent = [];
+		for (let i = 1; i <= surahAyatNumber; i++) {
+			AyatComponent.push(
+				<option
+					value={i}
+					key={i.toString()}
+					selected={i === ayahInLocalStorage}
+				>
+					{i}
+				</option>
+			);
+		}
+
+		return AyatComponent;
+	};
+
+	const onSurahChange = (surahNumber) => {
+		let sNumAndTVerse = surahNumber.split('_');
+
+		setSurahAyatNumber(parseInt(sNumAndTVerse[1]));
+		localStorage.setItem('surahNumber', sNumAndTVerse[0]);
+		setSurahNumber(sNumAndTVerse[0]);
+		localStorage.setItem('ayahNumber', 1);
+	};
+
+	const onAyahChange = (ayahNumber) => {
+		localStorage.setItem('ayahNumber', ayahNumber);
+	};
+
+	const onKeep = () => {
+		localStorage.setItem('pageNumber', undefined);
+
 		if (!localStorage.getItem('ayahNumber')) {
 			localStorage.setItem('ayahNumber', 1);
 		}
@@ -28,115 +78,36 @@ const Start = () => {
 		myHistory.push('/keep');
 	};
 
-	const submitForm = (e) => {
-		e.preventDefault();
-
-		localStorage.setItem('ayahNumber', newAyah);
-		localStorage.setItem('surahNumber', newSurah);
-		localStorage.setItem('pageNumber', undefined);
-		myHistory.push('/keep');
-	};
-
-	const onSurahChange = (surahNumber) => {
-		let sNumAndTVerse = surahNumber.split('_');
-		setNewSurah(parseInt(sNumAndTVerse[0]));
-		setSurahAyatNumber(parseInt(sNumAndTVerse[1]));
-	};
-
-	const changeShiekh = (shiekh) => {
-		localStorage.setItem('shiekh', shiekh);
-	};
-
-	const renderShiek = () => {
-		let favShiekh = localStorage.getItem('shiekh');
-		return SHIEKH.map((person) => {
-			return (
-				<option
-					value={person.identifier}
-					key={person.identifier}
-					selected={favShiekh === person.identifier}
-				>
-					{person.name}
-				</option>
-			);
-		});
-	};
-
-	const renderSurahsNames = () => {
-		return SURAHS.map((surah) => {
-			return (
-				<option
-					value={`${surah.number}_${surah.total_verses}`}
-					key={surah.number.toString()}
-				>
-					سورة {surah.name}
-				</option>
-			);
-		});
-	};
-
-	const renderAyatNumber = () => {
-		let AyatComponent = [];
-		for (let i = 1; i <= surahAyatNumber; i++) {
-			AyatComponent.push(
-				<option value={i} key={i.toString()}>
-					{i}
-				</option>
-			);
-		}
-
-		return AyatComponent;
-	};
-
 	return (
 		<div className="start">
-			<div className="start_starting">
-				<button className="btn mt-2" onClick={savedStart}>
-					ابدأ من اخر حفظ قمت به
-				</button>
-				<button
-					className="btn mt-2"
-					onClick={() => setShowCustom((prevState) => !prevState)}
-				>
-					بدايه مخصصه
-				</button>
+			<h3 className="start_welcome">اهلا بيك في احفظ القرآن</h3>
 
-				<form
-					className="form mt-2"
-					onSubmit={submitForm}
-					style={{ display: showCustom ? 'flex' : 'none' }}
+			<form className="form mt-2">
+				<select
+					className="form_input ml-1"
+					onChange={(e) => onSurahChange(e.target.value)}
 				>
-					<select
-						className="form_input"
-						onChange={(e) => changeShiekh(e.target.value)}
-					>
-						<option value="abdulbasitmurattal">اختر قارئك المفضل</option>
-						{renderShiek()}
-					</select>
-					<select
-						className="form_input"
-						onChange={(e) => onSurahChange(e.target.value)}
-					>
-						<option value="1">اختر اسم السوره</option>
-						{renderSurahsNames()}
-					</select>
-					<select
-						className="form_input"
-						onChange={(e) => setNewAyah(e.target.value)}
-					>
-						<option value="1">اختر رقم الآيه</option>
-						{renderAyatNumber()}
-					</select>
-					<button className="btn btn-sm">تأكيد</button>
-				</form>
-			</div>
+					<option value="1">اختر اسم السوره</option>
+					{renderSurahsNames()}
+				</select>
+				<select
+					className="form_input"
+					onChange={(e) => onAyahChange(e.target.value)}
+				>
+					<option value="1">اختر رقم الآيه</option>
+					{renderAyatNumber()}
+				</select>
+			</form>
 
-			<div className="start_hadith ayat_aya">
-				<p>
-					عن عبد الله بن مسعود -رضي الله عنه- إنَّ رسول الله قال: "من قرأ حرفًا
-					من كتابِ اللهِ فلهُ به حسنةٌ والحسنةُ بعشرِ أمثالِها، لا أقولُ آلم
-					حرفٌ، ولكن ألفٌ حرفٌ ولامٌ حرفٌ وميمٌ حرفٌ"
-				</p>
+			<div className="start_ask">
+				<p className="start_ask-text">عايز تعمل ايه ؟</p>
+				<button className="btn ml-1" onClick={onKeep}>
+					احفظ
+				</button>
+				<Link to={`read/${surahNumber}`} className="btn ml-1">
+					اقرأ
+				</Link>
+				{/* <button className="btn">استمع</button> */}
 			</div>
 		</div>
 	);
