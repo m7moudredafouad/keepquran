@@ -46,12 +46,12 @@ const Nav = () => {
 				<Link to="/" className="nav_list-link">
 					<li>الرئيسيه</li>
 				</Link>
-				<a className="nav_list-link dropdown">
+				<button className="nav_list-link btn btn-nav dropdown">
 					<li>الاعدادات</li>
 					<ul className="dropdown_main">
 						<li className="dropdown_item">
 							<div className="dropdown_item-check">
-								<p>تشغيل تلقائي</p>
+								<p onClick={() => changeAutoPlay(!autoState)}>تشغيل تلقائي</p>
 								<label className="switch">
 									<input
 										type="checkbox"
@@ -64,7 +64,9 @@ const Nav = () => {
 						</li>
 						<li className="dropdown_item">
 							<div className="dropdown_item-check">
-								<p>اضافه الصوت</p>
+								<p onClick={() => changeAddSound(!addSoundState)}>
+									اضافه الصوت
+								</p>
 								<label className="switch">
 									<input
 										type="checkbox"
@@ -86,7 +88,7 @@ const Nav = () => {
 							</form>
 						</li>
 					</ul>
-				</a>
+				</button>
 
 				<Link to="/about" className="nav_list-link">
 					<li>من نحن</li>
